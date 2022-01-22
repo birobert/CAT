@@ -23,7 +23,6 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     address private _developmentWalletAddress;
     uint256 private constant MAX = ~uint256(0);
     uint256 private _tTotal = 1000000000000000 * 10**18;
-    uint256 private foo = 12;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     string private _name = "Children's Aid Token";
@@ -31,8 +30,8 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     uint8 private _decimals = 18;
     uint256 public _taxFee = 50;//holders share
     uint256 private _previousTaxFee = _taxFee;
-    uint256 public _developmentFee = 10;//charity
-    uint256 private _previousDevelopmentFee = _developmentFee;
+    uint256 public _charityFee = 10;//charity
+    uint256 private _previousCharityFee = _charityFee;
     uint256 public _liquidityFee = 30;//liquidity
     uint256 private _previousLiquidityFee = _liquidityFee;
 
@@ -174,8 +173,8 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
         _taxFee = taxFee;
     }
-    function setDevelopmentFeePercent(uint256 developmentFee) external onlyOwner() {
-        _developmentFee = developmentFee;
+    function setCharityFeePercent(uint256 charityFee) external onlyOwner() {
+        _charityFee = charityFee;
     }
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
         _liquidityFee = liquidityFee;
@@ -249,7 +248,7 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
         );
     }
     function calculateDevelopmentFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_developmentFee).div(
+        return _amount.mul(_charityFee).div(
             10**3
         );
     }
@@ -261,15 +260,15 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     function removeAllFee() private {
         if(_taxFee == 0 && _liquidityFee == 0) return;
         _previousTaxFee = _taxFee;
-        _previousDevelopmentFee = _developmentFee;
+        _previousCharityFee = _charityFee;
         _previousLiquidityFee = _liquidityFee;
         _taxFee = 0;
-        _developmentFee = 0;
+        _charityFee = 0;
         _liquidityFee = 0;
     }
     function restoreAllFee() private {
         _taxFee = _previousTaxFee;
-        _developmentFee = _previousDevelopmentFee;
+        _charityFee = _previousCharityFee;
         _liquidityFee = _previousLiquidityFee;
     }
     function isExcludedFromFee(address account) public view returns(bool) {
