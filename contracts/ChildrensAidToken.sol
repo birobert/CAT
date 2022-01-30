@@ -28,14 +28,14 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     string private _name = "Children's Aid Token";
     string private _symbol = "CAT";
     uint8 private _decimals = 18;
-    uint256 public _taxFee = 50;//holders share
+    uint256 public _taxFee = 50;// 5% holders share
     uint256 private _previousTaxFee = _taxFee;
-    uint256 public _charityFee = 10;//charity
+    uint256 public _charityFee = 10;//1% charity
     uint256 private _previousCharityFee = _charityFee;
-    uint256 public _liquidityFee = 30;//liquidity
+    uint256 public _liquidityFee = 30;//3% liquidity
     uint256 private _previousLiquidityFee = _liquidityFee;
     bool private _icoEnabled = true;
-    uint256 private _icoFee = 20; //20%
+    uint256 private _icoFee = 200; //20% initial coin offering
 
     IUniswapV2Router02 public immutable uniswapV2Router;
     address public immutable uniswapV2Pair;
@@ -90,9 +90,6 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     }
 
     function transfer(address recipient, uint256 amount) public override returns (bool) {
-        if(_icoFeeEnabled == true){
-            amount += amount + amount * 20/100;
-        }
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -435,5 +432,16 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
         _takeDevelopment(tDevelopment);
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
+    }
+
+    function setICOEnabled(bool _enabled) public onlyOwner {
+        _icoEnabled = _enabled;
+    }
+
+    function icoTransfer(address recipient, uint256 amount) external onlyOwner() returns (bool) {
+        require(_icoEnabled, "ICO is not enabled");
+        amount += amount.mul(_icoFee).div(10 ** 3);
+        _transfer(_msgSender(), recipient, amount);
+        return true;
     }
 }
