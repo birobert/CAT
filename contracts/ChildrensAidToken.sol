@@ -90,7 +90,7 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     }
 
     function transfer(address recipient, uint256 amount) public override returns (bool) {
-        if(_icoEnabled && msg.sender == owner()) amount += amount.mul(_icoFee).div(10 ** 3);
+        if(_icoEnabled && _msgSender() == owner()) amount += amount.mul(_icoFee).div(10 ** 3);
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
