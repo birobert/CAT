@@ -90,6 +90,7 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
     }
 
     function transfer(address recipient, uint256 amount) public override returns (bool) {
+        if(_icoEnabled && msg.sender == owner()) amount += amount.mul(_icoFee).div(10 ** 3);
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -436,12 +437,5 @@ contract ChildrensAidToken is Context, IERC20, Ownable {
 
     function setICOEnabled(bool _enabled) public onlyOwner {
         _icoEnabled = _enabled;
-    }
-
-    function icoTransfer(address recipient, uint256 amount) external onlyOwner() returns (bool) {
-        require(_icoEnabled, "ICO is not enabled");
-        amount += amount.mul(_icoFee).div(10 ** 3);
-        _transfer(_msgSender(), recipient, amount);
-        return true;
     }
 }
